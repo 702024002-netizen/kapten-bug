@@ -63,6 +63,40 @@ button:disabled{opacity:.6;cursor:default}
 .st3d{width:190px;height:200px;margin:0 auto;display:flex;align-items:center;justify-content:center}
 #qbug .st3d{width:140px;height:140px}
 .st3d canvas{display:block;width:100%!important;height:100%!important}
+body{background:linear-gradient(rgba(14,22,24,.78),rgba(14,22,24,.9)),repeating-linear-gradient(0deg,#1d3a3d 0 1px,transparent 1px 40px),repeating-linear-gradient(90deg,#1d3a3d 0 1px,transparent 1px 40px),#101a1c}
+.bits[hidden]{display:none}
+.bub{background:#fff;color:#222;border-radius:16px;padding:10px 14px;text-align:left;width:100%;font-size:.95rem;line-height:1.4}
+.bub:empty{display:none}
+.pop3{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px}
+.pop3[hidden]{display:none}
+.pp{max-width:380px;display:flex;flex-direction:column;align-items:center;gap:12px;animation:pop .35s ease-out}
+.chip{background:#12373a;border:1px solid #2a7a80;color:#8fe3e8;border-radius:999px;padding:4px 12px;font-size:.8rem}
+.crew{font-size:1.8rem;letter-spacing:6px}
+#app{padding-bottom:96px}
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;gap:6px;justify-content:center;padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 8px);background:rgba(10,18,20,.95);border-top:1px solid #2a3f42}
+#nav[hidden]{display:none}
+#nav button{flex:1;max-width:110px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;font-size:.72rem;min-height:56px}
+#nav button span{font-size:1.4rem;line-height:1}
+#nav button i{display:block;width:100%;height:5px;border-radius:3px;background:#333;overflow:hidden}
+#nav button u{display:block;height:100%;background:var(--gold)}
+#nav button.on{border-color:var(--gold);background:#2a2412}
+#nav button.hint{animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(242,181,29,.55)}}
+.room{width:100%;border-radius:18px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px;border:1px solid var(--line)}
+.r-kit{background:linear-gradient(#5a3a1c,#3a2410)}
+.r-bath{background:linear-gradient(#1f5b66,#143a44)}
+.r-bed{background:linear-gradient(#3a2a6a,#241a45)}
+.stw{position:relative;width:100%;height:300px}
+.st3d.wide{width:100%;height:300px;border-radius:14px;overflow:hidden}
+.stw .st3d{width:100%;height:100%}
+#bugs{position:absolute;inset:0}
+.bg{position:absolute;font-size:2rem;background:none;border:0;padding:0;min-height:0;animation:pop .4s}
+.drag{position:fixed;z-index:30;font-size:2.4rem;transform:translate(-50%,-50%);pointer-events:none}
+#bi{font-size:2.4rem;touch-action:none;cursor:grab;user-select:none;padding:4px 10px;background:#2a2412;border:1px dashed var(--gold);border-radius:12px}
+#s-bed.dark .room{filter:brightness(.55)}
+#zz{font-size:2rem}
+#zz[hidden]{display:none}
+.ptr{display:none}
 </style>
 </head>
 <body>
@@ -72,9 +106,13 @@ button:disabled{opacity:.6;cursor:default}
 <!-- 1. Beranda -->
 <section class="scr on" id="s-home">
   <div style="height:22px"></div>
+  <div class="chip">🔬 Lab Mesin Waktu</div>
   <h1>Kapten Bug dan<br>Mesin Waktu Rusak</h1>
+  <div class="bub" id="hb"></div>
   <div id="homeBug"></div>
   <p class="mute">Bantu Kapten Bug memperbaiki mesin waktunya! Kumpulkan baterai lewat 3 destinasi.</p>
+  <p class="mute">Teman-teman di lab sedang butuh bantuan:</p>
+  <div class="crew" aria-hidden="true">🧔 🤴 🐱 🤖 🦖</div>
   <div class="lv" id="lv" role="group" aria-label="Pilih tingkat">
     <button data-l="0" class="sel">Kadet</button><button data-l="1">Letnan</button><button data-l="2">Kapten</button>
   </div>
@@ -86,16 +124,19 @@ button:disabled{opacity:.6;cursor:default}
 <section class="scr" id="s-lever">
   <div class="bar"><span class="mute">Baterai</span><div class="bat" id="bat1"></div><span class="mute" id="prog1"></span></div>
   <h2>Tarik tuas, tentukan tujuan!</h2>
+  <div class="bub" id="lbub"></div>
   <div class="ptr"></div>
-  <div class="wheel" id="wheel"></div>
+  <div class="st3d wide" id="mst" data-c="machine" data-m="x" data-r="lab"></div>
   <p id="wres" class="mute">Roda tujuan acak</p>
   <button class="go" id="pull">Tarik tuas</button>
+  <div id="pop" class="pop3" hidden></div>
 </section>
 
 <!-- 3. Destinasi dan soal -->
 <section class="scr" id="s-q">
   <div class="bar"><div class="bat" id="bat2"></div><span class="mute" id="qcode"></span><span class="time" id="tm">15 dtk</span></div>
   <div class="dest" id="qdest"></div>
+  <div class="bub" id="qreq"></div>
   <div id="qbug"></div>
   <div class="bits" id="qbits" hidden></div>
   <p class="qtxt" id="qtxt"></p>
@@ -130,7 +171,32 @@ button:disabled{opacity:.6;cursor:default}
   <div class="lv"><button class="go" id="again">Main lagi</button><button id="done">Selesai</button></div>
 </section>
 
+<!-- Dapur Baterai -->
+<section class="scr" id="s-kit">
+  <div class="room r-kit"><h2>🔋 Dapur Baterai</h2><div class="bub" id="kb"></div>
+  <div class="st3d wide" id="kst" data-c="bug" data-m="happy" data-r="kit"></div>
+  <p class="mute" style="color:#f2d9b0">Seret baterai ke mulut Kapten Bug</p>
+  <div class="lv" style="align-items:center"><div id="bi" role="img" aria-label="Baterai cadangan">🔋</div><button id="feedb">Beri baterai</button></div>
+  <p class="mute" id="stk" style="color:#f2d9b0"></p></div>
+</section>
+<!-- Kamar Mandi -->
+<section class="scr" id="s-bath">
+  <div class="room r-bath"><h2>🧼 Kamar Mandi (Cuci Bug)</h2><div class="bub" id="bb"></div>
+  <div class="stw"><div class="st3d wide" data-c="bug" data-m="happy" data-r="bath"></div><div id="bugs"></div></div></div>
+</section>
+<!-- Kamar Tidur -->
+<section class="scr" id="s-bed">
+  <div class="room r-bed"><h2>🌙 Kamar Tidur</h2><div class="bub" id="bdb"></div>
+  <div class="st3d wide" data-c="bug" data-m="happy" data-r="bed"></div><div id="zz" hidden>💤</div>
+  <button id="lampb" class="go">💡 Matikan lampu</button></div>
+</section>
 </main>
+<nav id="nav" hidden aria-label="Ruangan">
+  <button data-r="s-home"><span>🏠</span>Lab<i><u></u></i></button>
+  <button data-r="s-kit"><span>🔋</span>Dapur<i><u></u></i></button>
+  <button data-r="s-bath"><span>🧼</span>Mandi<i><u></u></i></button>
+  <button data-r="s-bed"><span>🌙</span>Tidur<i><u></u></i></button>
+</nav>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ===== Data: tokoh =====
@@ -149,7 +215,7 @@ function chick(){
 }
 
 // ===== Tokoh 3D (three.js): menggantikan versi 2D di atas =====
-function bug(m){return '<div class="st3d" data-c="bug" data-m="'+m+'"></div>'}
+function bug(m,r){return '<div class="st3d'+(r?' wide':'')+'" data-c="bug" data-m="'+m+'"'+(r?' data-r="'+r+'"':'')+'></div>'}
 function chick(){return '<div class="st3d" data-c="chick" data-m="x"></div>'}
 function dino(){return '<div class="st3d" data-c="dino" data-m="x"></div>'}
 var ST=null,RM=matchMedia('(prefers-reduced-motion:reduce)').matches?0:1;
@@ -172,7 +238,7 @@ function initST(){
   var a1=CY(.045,.045,.5,dk,.12,1.4,0);a1.rotation.z=-.4;var a2=CY(.045,.045,.36,dk,.38,1.72,0);a2.rotation.z=-1.2;hd.add(a1,a2,SP(.12,rd,.58,1.82,0));
   bh.add(starM(-.34),starM(.34));var sm=new THREE.Mesh(new THREE.TorusGeometry(.22,.045,10,20,Math.PI),M(0x8a3b12));sm.rotation.z=Math.PI;sm.position.set(0,-.12,.92);bh.add(sm);
   bp.add(SP(.22,wh,-.33,.15,.82),SP(.22,wh,.33,.15,.82),SP(.09,dk,-.33,.12,1.02),SP(.09,dk,.33,.12,1.02),SP(.1,M(0x8a3b12),0,-.3,.92,1,1.3,.5),SP(.1,M(0x5ec2ff,.1),.72,.4,.68,.8,1.3,.8));
-  hd.add(bh,bp);B.add(hd,SP(.62,og,0,-.55,0,1,1.05,.9),new THREE.Mesh(new THREE.BoxGeometry(.36,.32,.06),dk),SP(.2,M(0x7a3f0e),-.28,-1.2,.15,1,.6,1.3),SP(.2,M(0x7a3f0e),.28,-1.2,.15,1,.6,1.3));
+  var bs=new THREE.Group();[-.34,.34].forEach(function(x){var e=new THREE.Mesh(new THREE.TorusGeometry(.14,.035,8,14,Math.PI),M(0x5a2a10));e.rotation.z=Math.PI;e.position.set(x,.2,.9);bs.add(e)});var sm2=new THREE.Mesh(new THREE.TorusGeometry(.1,.03,8,14,Math.PI),M(0x8a3b12));sm2.rotation.z=Math.PI;sm2.position.set(0,-.1,.92);bs.add(sm2);bs.visible=false;hd.add(bh,bp,bs);B.add(hd,SP(.62,og,0,-.55,0,1,1.05,.9),new THREE.Mesh(new THREE.BoxGeometry(.36,.32,.06),dk),SP(.2,M(0x7a3f0e),-.28,-1.2,.15,1,.6,1.3),SP(.2,M(0x7a3f0e),.28,-1.2,.15,1,.6,1.3));
   B.children[2].position.set(0,-.6,.57);var fill=new THREE.Mesh(new THREE.BoxGeometry(.26,.22,.07),yl);fill.position.set(0,-.6,.59);B.add(fill);
   var AL=arm(-1,og),AR=arm(1,og);B.add(AL,AR);B.position.y=-.55;
   // Ayam (Kapten Bug jadi ayam)
@@ -185,8 +251,57 @@ function initST(){
   var spk=SP(.12,M(0xffd23a,.3,0xffb300),1.15,-.12,0);dh.add(spk);
   D2.add(SP(.85,gr,0,-.1,0,1.15,.85,.9),dh,CN(.15,.34,gr,-.45,.7,0),CN(.15,.34,gr,0,.78,0),CN(.15,.34,gr,.4,.72,0),CN(.28,.9,gr,-1.35,-.3,0,0,Math.PI/2+.3),SP(.22,gr,.4,-.85,.35),SP(.22,gr,.4,-.85,-.35),SP(.22,gr,-.4,-.85,.35),SP(.22,gr,-.4,-.85,-.35));
   D2.rotation.y=-.5;D2.scale.set(.95,.95,.95);D2.position.y=-.1;
+  function face(g,y,z){g.add(SP(.1,dk,-.3,y,z),SP(.1,dk,.3,y,z),SP(.14,pk,-.55,y-.2,z-.05,1,.7,.4),SP(.14,pk,.55,y-.2,z-.05,1,.7,.4));var m=new THREE.Mesh(new THREE.TorusGeometry(.18,.04,10,18,Math.PI),M(0x7a2e12));m.rotation.z=Math.PI;m.position.set(0,y-.2,z+.02);g.add(m)}
+  function mp(sk,bd){var g=new THREE.Group(),a=M(sk);g.add(SP(.9,a,0,.5,0),SP(.62,M(bd),0,-.75,0,1,1.1,.9),SP(.2,a,-.28,-1.4,.12,1,.6,1.3),SP(.2,a,.28,-1.4,.12,1,.6,1.3));face(g,.55,.84);return g}
+  var GK=mp(0xf1c9a0,0x9c6b3a);GK.add(SP(.95,M(0x4a2c14),0,.8,-.2,1,.65,1),CY(.07,.1,1.2,M(0x8b5a2b),1,-.5,.3));
+  var RJ=mp(0xf4cfa8,0x6b3fa0);RJ.add(CY(.5,.62,.3,yl,0,1.5,0),CN(.14,.3,yl,-.35,1.8,0),CN(.14,.3,yl,0,1.85,0),CN(.14,.3,yl,.35,1.8,0),SP(.5,wh,0,.05,.62,1,.8,.45));
+  var MC=mp(0x8fb0e8,0x3a5fa8);MC.add(CN(.28,.55,M(0x8fb0e8),-.55,1.5,0,0,.35),CN(.28,.55,M(0x8fb0e8),.55,1.5,0,0,-.35));
+  var KR=mp(0x5ec2c2,0x2a7a80);KR.add(CY(.04,.04,.5,dk,0,1.7,0),SP(.1,rd,0,2,0));
+  var P={grok:GK,raja:RJ,miu:MC,kasir:KR};for(var k in P){P[k].visible=false;P[k].position.y=-.2;sc.add(P[k])}
+  // Latar ruangan 3D: lab, dapur, kamar mandi, kamar tidur
+  function bx(w,h,d,c,x,y,z,e){var o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c,.6,e));o.position.set(x,y,z);return o}
+  function rm(wc,fc){var g=new THREE.Group(),w=new THREE.Mesh(new THREE.PlaneGeometry(30,14),M(wc,.9));w.position.set(0,2,-3.6);var f=new THREE.Mesh(new THREE.PlaneGeometry(30,14),M(fc,.7));f.rotation.x=-Math.PI/2;f.position.set(0,-1.8,0);g.add(w,f);return g}
+  function win(x,y,sky){return [bx(2.2,2,.1,0x8a5a2b,x,y,-3.55),bx(1.9,1.7,.12,sky||0xbfe6ff,x,y,-3.5,sky?0:0x88ccff)]}
+  var L=rm(0x2b5a66,0x7a5a3a);
+  L.add(...win(-3.2,1.7),bx(2.2,1.3,.9,0x555b66,3.3,-1.15,-2.7),bx(1.6,.9,.1,0x66ffcc,3.3,-.85,-2.2,0x33ffaa),CY(1.9,1.9,.05,M(0x4fae6a,.8),0,-1.78,.6));
+  var rg=new THREE.Mesh(new THREE.TorusGeometry(.8,.17,12,32),M(0x5ec2c2,.3,0x2a9a9a));rg.position.set(-3.4,-.55,-2.6);L.add(rg,SP(.4,M(0xf2b51d,.3,0xffb300),-3.4,-.55,-2.6));
+  var K=rm(0xf0b36b,0x8a5a3a);
+  K.add(bx(7,1.8,1,0xc98a4b,-1,-.9,-3),bx(7,.15,1.1,0xf3e0c0,-1,.05,-3),bx(3,1.3,.9,0xa85f2a,-3.2,2.6,-3.1),bx(3,1.3,.9,0xa85f2a,1.2,2.6,-3.1),bx(1.5,3.6,1,0xf4f4f4,4.1,0,-2.9),...win(-1,1.7),bx(.6,1.8,.05,0xe24a8a,-2.3,1.7,-3.4),bx(.6,1.8,.05,0xe24a8a,.3,1.7,-3.4),CY(.4,.4,.05,wh,-2.2,.15,-2.7),CY(.4,.4,.05,wh,.2,.15,-2.7),bx(.8,.5,.5,0xffd23a,-.9,.35,-2.8));
+  var Bt=rm(0x6fc7d0,0xd98ab0);
+  Bt.add(CY(1.5,1.2,1.3,M(0xff9ec7,.4),3,-1.1,-2.6),SP(.6,wh,2.6,-.35,-2.3),SP(.5,wh,3.2,-.3,-2.5),SP(.45,wh,3.5,-.4,-2.2),bx(1.4,1.4,.8,0xffffff,-3.4,-1.1,-3),SP(.5,wh,-3.4,-.2,-3),bx(.15,.6,.15,0xc0c0c0,-3.4,.2,-3.3),bx(1.3,1.6,.08,0xbfe6ff,-3.4,1.4,-3.5,0x88ccff),bx(10,.15,.05,0xffffff,0,.9,-3.55),bx(1.1,.9,.1,0xe24a8a,.2,.1,-3.45));
+  var Bd=rm(0x4a3a8a,0x6b4a3a);
+  Bd.add(bx(3.4,.8,2.4,0x8a5a2b,2.7,-1.3,-2),bx(3.2,.5,2.2,0xe0457b,2.7,-.8,-2),SP(.6,wh,1.8,-.4,-2.4,1.2,.5,.8),SP(.6,wh,1.8,-.4,-1.6,1.2,.5,.8),bx(1,1,.9,0x8a5a2b,-3.2,-1.3,-2.8),CY(.3,.45,.6,M(0xffd23a,.4,0xffb300),-3.2,-.45,-2.8),...win(-.2,2,0x101840),SP(.25,M(0xfff2a8,.3,0xffe066),.4,2.4,-3.4),SP(.07,M(0xffffff,.3,0xffffff),-.6,2.5,-3.4),SP(.07,M(0xffffff,.3,0xffffff),-.3,1.7,-3.4));
+  // Hiasan bertema: biner, jam, roda gigi, baterai
+  function bin(x,y,w,h,col){var c=document.createElement('canvas');c.width=256;c.height=Math.round(256*h/w);var g=c.getContext('2d');g.font='bold 22px monospace';g.fillStyle=col;g.textAlign='center';var rows=Math.floor(c.height/26);for(var i=0;i<rows;i++){var t='';for(var j=0;j<10;j++)t+=(Math.random()<.5?'0':'1')+' ';g.globalAlpha=.35+Math.random()*.6;g.fillText(t,128,22+i*26)}var o=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true}));o.position.set(x,y,-3.45);return o}
+  function clk(x,y){var g=new THREE.Group(),f=CY(.7,.7,.12,M(0xffffff,.4),0,0,0);f.rotation.x=Math.PI/2;g.add(f,new THREE.Mesh(new THREE.TorusGeometry(.7,.07,10,28),M(0xf2b51d,.3,0xb38600)),bx(.06,.45,.04,0x222222,0,.2,.08),bx(.35,.06,.04,0x222222,.15,0,.08));g.position.set(x,y,-3.4);return g}
+  function gear(x,y,r,c){var o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.18,10),M(c||0xf2b51d,.4,0x7a5a00));o.rotation.x=Math.PI/2;o.position.set(x,y,-3.4);return o}
+  L.add(bin(-1.1,1.9,2.6,2.4,'#5ef2c0'),clk(1,2.6),gear(4.2,1.7,.55),gear(3.5,2.3,.35,0x5ec2c2));
+  K.add(bin(4.1,2.9,1.6,1.2,'#ffd98a'),clk(-4.4,1.1),gear(-4.4,0,.3,0x5ec2c2));
+  for(var bi=0;bi<5;bi++)K.add(CY(.16,.16,.55,M(0xffd23a,.3,0xffb300),-4.2+bi*.32,.4,-2.7));
+  Bt.add(bin(.5,2.3,2.4,1.6,'#5ef2c0'),clk(-1.6,2),gear(4.4,2.6,.4));
+  Bd.add(bin(-3.5,1.9,1.6,1.8,'#9ab0ff'),clk(2.8,1.9),gear(4.4,0.9,.35,0x5ec2c2));
+  // Mesin waktu 3D (layar tuas): roda tujuan + tuas yang bisa ditarik
+  var MM=new THREE.Group(),wheel=new THREE.Group(),lever=new THREE.Group(),wp=new THREE.Group();
+  var DK=['zb','kk','pk','kt','zb','kk','pk','kt'],wcol=[0x8a5a2b,0x6b4fc0,0x2b5da8,0x1f9a9a,0xc9722b,0x8a6fe0,0x4a7fd0,0x2fb3b3];
+  for(var wi=0;wi<8;wi++){
+   wheel.add(new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,.35,1,1,false,wi*Math.PI/4,Math.PI/4),M(wcol[wi],.4)));
+   var tcn=wi*Math.PI/4+Math.PI/8,cv=document.createElement('canvas');cv.width=cv.height=128;var cx=cv.getContext('2d');cx.font='84px sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(D[DK[wi]].e,64,70);
+   var lb=new THREE.Mesh(new THREE.PlaneGeometry(.6,.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),transparent:true}));
+   lb.rotation.order='YXZ';lb.rotation.set(-Math.PI/2,tcn+Math.PI,0);lb.position.set(Math.sin(tcn)*.95,.19,Math.cos(tcn)*.95);wheel.add(lb);
+  }
+  wp.rotation.x=Math.PI/2;wp.position.set(0,.6,0);wp.add(wheel);
+  var rim=new THREE.Mesh(new THREE.TorusGeometry(1.58,.13,12,40),M(0xf2b51d,.3,0x7a5a00));rim.position.set(0,.6,.1);
+  lever.position.set(2.4,-.5,.7);lever.rotation.x=-.5;lever.add(CY(.07,.07,1.4,M(0xcccccc,.2),0,.7,0),SP(.26,M(0xe5552b,.3),0,1.45,0));
+  MM.add(wp,rim,SP(.28,M(0xe5552b),0,.6,.25),CN(.2,.4,M(0xe5552b),0,2.4,.2,0,Math.PI),bx(4.2,1.3,1.8,0x3a4252,0,-1.15,-.1),bx(3.4,.2,1.4,0x586075,0,-.45,-.1),SP(.1,M(0x66ffcc,.3,0x33ffaa),-1,-.9,.85),SP(.1,M(0xffd23a,.3,0xffb300),-.6,-.9,.85),SP(.1,M(0xe5552b,.3,0xe5552b),-.2,-.9,.85),SP(.28,M(0x586075),2.4,-.5,.7),bx(.5,.2,.9,0x2a303c,2.4,-.5,.7),lever);
+  MM.position.x=.5;MM.visible=false;sc.add(MM);
+  r.domElement.addEventListener('pointerdown',function(ev){
+   if(!ST||ST.who!=='machine'||$('pull').disabled)return;
+   var bb=r.domElement.getBoundingClientRect(),rc=new THREE.Raycaster();rc.setFromCamera(new THREE.Vector2((ev.clientX-bb.left)/bb.width*2-1,-((ev.clientY-bb.top)/bb.height*2-1)),cam);
+   if(rc.intersectObject(lever,true).length)$('pull').click();
+  });
+  var R={lab:L,kit:K,bath:Bt,bed:Bd};for(var rk in R){R[rk].visible=false;sc.add(R[rk])}
   sc.add(B,C,D2);
-  ST={r:r,sc:sc,cam:cam,B:B,C:C,D:D2,bh:bh,bp:bp,AL:AL,AR:AR,hd:hd,WL:WL,WR:WR,dh:dh,spk:spk,who:'bug',mood:'happy',t0:performance.now(),by:B.position.y,cy:C.position.y};
+  ST={MM:MM,wheel:wheel,lever:lever,DK:DK,R:R,bs:bs,P:P,r:r,sc:sc,cam:cam,B:B,C:C,D:D2,bh:bh,bp:bp,AL:AL,AR:AR,hd:hd,WL:WL,WR:WR,dh:dh,spk:spk,who:'bug',mood:'happy',t0:performance.now(),by:B.position.y,cy:C.position.y};
   requestAnimationFrame(loop);return true;
  }catch(e){return false}
 }
@@ -194,15 +309,23 @@ function loop(now){
  requestAnimationFrame(loop);
  var s=ST;if(!s||!s.r.domElement.offsetParent)return;
  var t=(now-s.t0)/1000,p=s.mood==='panic',w=s.who;
- s.B.visible=w==='bug';s.C.visible=w==='chick';s.D.visible=w==='dino';
+ s.B.visible=w==='bug'||w==='machine';s.C.visible=w==='chick';s.D.visible=w==='dino';
+ if(w==='machine'){
+  var m=s.pm,e=m?(now-m.t0)/1000:0,lp=!m?0:e<.4?e/.4:e<.9?1:Math.max(0,1-(e-.9)/.5);
+  s.MM.visible=true;s.lever.rotation.x=-.5+1.3*lp;
+  if(m){var we=Math.max(0,Math.min(1,(e-.4)/2.1));s.wheel.rotation.y=m.from+(m.to-m.from)*(1-Math.pow(1-we,3));s.cam.position.z=8.4-.5*Math.sin(Math.min(1,e/2.5)*Math.PI)}else s.wheel.rotation.y+=.004*RM;
+  s.B.scale.setScalar(.55);s.B.position.set(-2.9,-1.14+Math.abs(Math.sin(t*4))*.15*RM,0);s.B.rotation.y=.3;
+  s.bh.visible=true;s.bp.visible=false;s.bs.visible=false;var a2=2.2+Math.sin(t*7)*.35*RM;s.AR.rotation.z=a2;s.AL.rotation.z=-a2;
+ }else{s.MM.visible=false;s.B.scale.setScalar(1);s.cam.position.z=8.4}
+ for(var r2 in s.R)s.R[r2].visible=s.room===r2;for(var k in s.P){var q=s.P[k];q.visible=w===k;if(q.visible){q.position.y=-.2+Math.abs(Math.sin(t*3.5))*.2*RM;q.rotation.y=Math.sin(t*1.6)*.4*RM;q.rotation.z=Math.sin(t*2.2)*.05*RM}}
  if(w==='bug'){
   s.B.position.y=s.by+(p?0:Math.abs(Math.sin(t*4))*.28*RM);
   s.B.position.x=p?Math.sin(t*45)*.06*RM:0;
   s.B.rotation.y=p?0:Math.sin(t*1.4)*.4*RM;
   s.hd.rotation.z=Math.sin(t*3)*.07*RM;
-  s.bh.visible=!p;s.bp.visible=p;
+  var z=s.mood==='sleep';s.bh.visible=!p&&!z;s.bp.visible=p;s.bs.visible=z;if(z){s.B.position.y=s.by;s.hd.rotation.z=.3}
   var sw=p?.45+Math.sin(t*28)*.25*RM:2.2+Math.sin(t*7)*.35*RM;
-  s.AR.rotation.z=sw;s.AL.rotation.z=-sw;
+  if(s.mood==='sleep')sw=.25;s.AR.rotation.z=sw;s.AL.rotation.z=-sw;
  }else if(w==='chick'){
   s.C.position.y=s.cy+Math.abs(Math.sin(t*5))*.3*RM;
   s.C.rotation.y=Math.sin(t*2)*.35*RM;
@@ -214,11 +337,31 @@ function loop(now){
  }
  s.r.render(s.sc,s.cam);
 }
+// ===== Teman-teman di lab (pop-up) =====
+var CP={
+ zb:{id:'grok',n:'Grok',e:'🧔',call:'Kapten! Apiku hampir padam di Zaman Batu. Tolong aku!',req:'Apiku hampir padam! Bantu aku membaca angka ajaib ini, ya!'},
+ kk:{id:'raja',n:'Raja',e:'🤴',call:'Kapten! Obor istanaku padam. Antar aku ke Kerajaan Kuno!',req:'Obor istana butuh kode yang benar. Tolong terjemahkan, Kapten!'},
+ pk:{id:'miu',n:'Miu-01',e:'🐱',call:'Meong! Antar aku pulang ke Planet Kucing, Kapten!',req:'Meong! Mesinku butuh angka biner yang pas supaya bisa pulang.'},
+ kt:{id:'kasir',n:'Kasir Robot',e:'🤖',call:'Bip bip! Kantin 2099 butuh bantuanmu, Kapten!',req:'Mesin kasirku error! Bantu hitung harganya, Kapten.'}
+};
+function machinePull(d){
+ if(!window.ST||!ST.MM)return;
+ var ix=[];for(var i=0;i<8;i++)if(ST.DK[i]===d)ix.push(i);
+ var k=ix[Math.floor(Math.random()*ix.length)],tc=k*Math.PI/4+Math.PI/8,cur=ST.wheel.rotation.y,to=Math.PI-tc;
+ to+=2*Math.PI*(Math.ceil((cur-to)/(2*Math.PI))+3);
+ ST.pm={t0:performance.now(),from:cur,to:to};
+}
+function popCall(){
+ var c=CP[S.q[2]];
+ $('pop').innerHTML=`<div class="panel pp"><div class="st3d" data-c="${c.id}" data-m="x"></div><div class="bub"><b>${c.e} ${c.n}</b><br>${c.call}</div><button class="go" id="pgo">Siap, berangkat!</button></div>`;
+ $('pop').hidden=false;mountStage();
+ $('pgo').addEventListener('click',function(){$('pop').hidden=true;toQuestion()});
+}
 function mountStage(){
- var scr=document.querySelector('.scr.on'),h=scr&&scr.querySelector('.st3d');
+ var scr=document.querySelector('.scr.on'),h=(!$('pop').hidden&&$('pop').querySelector('.st3d'))||(scr&&scr.querySelector('.st3d'));
  if(!h)return;
  if(!window.THREE||(!ST&&!initST())){h.textContent={bug:'🤖',chick:'🐥',dino:'🦖'}[h.dataset.c];h.style.fontSize='4.5rem';return}
- ST.who=h.dataset.c;ST.mood=h.dataset.m;ST.t0=performance.now();
+ ST.who=h.dataset.c;ST.mood=h.dataset.m;ST.room=h.dataset.r||'';ST.t0=performance.now();
  var w=h.clientWidth||190,hh=h.clientHeight||200;
  ST.r.setSize(w,hh,false);ST.cam.aspect=w/hh;ST.cam.updateProjectionMatrix();
  h.appendChild(ST.r.domElement);
@@ -256,13 +399,13 @@ var Q=[
 // ===== State =====
 var S={l:0,qs:[],i:0,bat:1,streak:0,score:0,t:15,tid:null,tries:0,q:null};
 var $=function(i){return document.getElementById(i)};
-function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.toggle('on',s.id===id)});window.scrollTo(0,0);mountStage()}
+function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.toggle('on',s.id===id)});window.scrollTo(0,0);navUp(id);mountStage()}
 function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function batHTML(n){var h='';for(var i=0;i<5;i++)h+='<i class="'+(i<n?'f':'')+'"></i>';return h+'<b></b>'}
 function setBat(){['bat1','bat2','bat3'].forEach(function(id){$(id).innerHTML=batHTML(S.bat)})}
 
 // ===== Beranda =====
-$('homeBug').innerHTML=bug('happy');mountStage();
+$('homeBug').innerHTML=bug('happy','lab');mountStage();
 function lvdesc(){$('lvdesc').textContent=LVD[S.l]}
 lvdesc();
 $('lv').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;S.l=+b.dataset.l;[].forEach.call($('lv').children,function(x){x.classList.toggle('sel',x===b)});lvdesc()});
@@ -280,20 +423,21 @@ var rot=0;
 function toLever(){
   setBat();
   $('prog1').textContent='Destinasi '+(S.i+1)+' dari 3';
-  $('wres').textContent='Roda tujuan acak';
+  $('wres').textContent='Roda tujuan acak';if(window.ST)ST.pm=null;
+  $('lbub').innerHTML=S.bat<=1?'🤖 <b>Kapten Bug:</b> Baterai mesin tinggal 1! Jawab dengan benar untuk mengisinya.':'🤖 <b>Kapten Bug:</b> Mesin siap! Siapa ya yang butuh bantuan di lab sekarang?';
   $('pull').disabled=false;
   show('s-lever');
 }
 $('pull').addEventListener('click',function(){
   var btn=this;btn.disabled=true;
-  var w=$('wheel');rot+=1440+Math.floor(Math.random()*360);w.style.transform='rotate('+rot+'deg)';
+  S.q=S.qs[S.i];S.tries=0;machinePull(S.q[2]);
   $('wres').textContent='Mesin waktu berputar…';
   S.q=S.qs[S.i];S.tries=0;
   setTimeout(function(){
     var d=D[S.q[2]];
     $('wres').innerHTML='Tujuan: <b>'+d.e+' '+d.n+'</b>';
-    setTimeout(toQuestion,1100);
-  },matchMedia('(prefers-reduced-motion:reduce)').matches?200:1900);
+    setTimeout(popCall,900);
+  },matchMedia('(prefers-reduced-motion:reduce)').matches?200:2800);
 });
 
 // ===== Destinasi dan soal =====
@@ -303,6 +447,7 @@ function toQuestion(){
   $('qcode').textContent=q[0]+' · '+LV[q[1]];
   var de=$('qdest');de.style.background=d.bg;de.innerHTML='<span class="em">'+d.e+'</span><div><b>'+d.n+'</b><div class="mute" style="color:#ddd">Tingkat '+LV[q[1]]+'</div></div>';
   $('qtxt').textContent=q[3];
+  var cp=CP[q[2]];$('qreq').innerHTML='<b>'+cp.e+' '+cp.n+':</b> '+cp.req;
   var bits=$('qbits');
   if(q[7]){bits.hidden=false;bits.innerHTML=q[7].split('').map(function(c){return '<span>'+c+'</span>'}).join('')}else bits.hidden=true;
   var idx=shuf([0,1,2,3]);var o=$('opts');o.innerHTML='';
@@ -364,12 +509,72 @@ $('seeRes').addEventListener('click',function(){
   $('bat4').innerHTML=batHTML(S.bat);
   var st=sc>=80?3:sc>=50?2:1;
   $('stars').innerHTML='★'.repeat(st)+'<span class="off">'+'★'.repeat(3-st)+'</span>';
-  $('badge').textContent='Lencana '+LV[S.l]+' · Modul 1: Biner';
+  $('badge').textContent='Lencana '+LV[S.l]+' · Modul 1: Biner (baterai +'+S.bat+' masuk ke Dapur)';PET.stock+=S.bat;save();
   $('score').textContent='Skor '+sc;
   show('s-res');
 });
 $('again').addEventListener('click',newSession);
 $('done').addEventListener('click',function(){show('s-home')});
+
+// ===== Lab: merawat Kapten Bug (dapur, kamar mandi, kamar tidur) =====
+var PET={en:60,cl:70,sl:70,stock:0},ROOMS=['s-home','s-kit','s-bath','s-bed'],cur='s-home',slp=null;
+try{var sv=JSON.parse(localStorage.getItem('kb-pet')||'null');if(sv)for(var key in PET)if(typeof sv[key]==='number')PET[key]=sv[key]}catch(e){}
+function save(){try{localStorage.setItem('kb-pet',JSON.stringify(PET))}catch(e){}}
+function lim(v){return Math.max(0,Math.min(100,v))}
+function say(id,t){$(id).innerHTML='🤖 <b>Kapten Bug:</b> '+t}
+function needs(){
+ var m=[['en',PET.en,'Baterai-ku hampir habis! Ayo ke Dapur Baterai.','s-kit'],['cl',PET.cl,'Badanku penuh bug! Ayo ke Kamar Mandi.','s-bath'],['sl',PET.sl,'Aku ngantuk... Ayo ke Kamar Tidur.','s-bed']].sort(function(a,b){return a[1]-b[1]})[0];
+ return m[1]<40?m:null;
+}
+function refresh(){
+ var hp=Math.round((PET.en+PET.cl+PET.sl)/3),v={'s-home':hp,'s-kit':PET.en,'s-bath':PET.cl,'s-bed':PET.sl},n=needs();
+ [].forEach.call($('nav').children,function(b){var r=b.dataset.r;b.querySelector('u').style.width=v[r]+'%';b.classList.toggle('hint',!!n&&n[3]===r&&r!==cur)});
+ say('hb',n?n[2]:'Aku senang! Ayo main kuis mesin waktu!');
+ $('stk').textContent='Baterai cadangan: '+PET.stock+' (dapat dari kuis)';
+}
+function navUp(id){
+ cur=id;$('nav').hidden=ROOMS.indexOf(id)<0;
+ [].forEach.call($('nav').children,function(b){b.classList.toggle('on',b.dataset.r===id)});
+ if(id!=='s-bed')lamp(true);
+ if(id==='s-kit')say('kb',PET.stock?'Aku lapar baterai! Seret baterainya ke mulutku.':'Belum ada baterai cadangan. Main kuis dulu di Lab!');
+ if(id==='s-bath')spawn();
+ if(id==='s-bed')lamp(true);
+ refresh();
+}
+$('nav').addEventListener('click',function(e){var b=e.target.closest('button');if(b)show(b.dataset.r)});
+// Dapur: seret baterai ke mulut
+function feed(){
+ if(PET.stock<1){say('kb','Belum ada baterai cadangan. Main kuis dulu di Lab!');return}
+ if(PET.en>=100){say('kb','Aku sudah penuh, terima kasih!');return}
+ PET.stock--;PET.en=lim(PET.en+25);say('kb','Nyam! Energiku bertambah +25 🔋');save();refresh();
+}
+(function(){
+ var bi=$('bi'),d=null;
+ function mv(e){if(d){d.style.left=e.clientX+'px';d.style.top=e.clientY+'px'}}
+ bi.addEventListener('pointerdown',function(e){if(PET.stock<1){feed();return}d=document.createElement('div');d.className='drag';d.textContent='🔋';document.body.appendChild(d);mv(e);try{bi.setPointerCapture(e.pointerId)}catch(x){}});
+ bi.addEventListener('pointermove',mv);
+ bi.addEventListener('pointerup',function(e){if(!d)return;var r=$('kst').getBoundingClientRect();d.remove();d=null;if(e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom)feed()});
+ $('feedb').addEventListener('click',feed);
+})();
+// Kamar mandi: ketuk bug untuk membersihkan
+function spawn(){
+ var n=Math.ceil((100-PET.cl)/25),b=$('bugs');b.innerHTML='';
+ say('bb',n?'Ada '+n+' bug nempel! Ketuk untuk membersihkan.':'Aku sudah kinclong!');
+ for(var i=0;i<n;i++){var x=document.createElement('button');x.textContent='🐛';x.setAttribute('aria-label','Bug');x.className='bg';x.style.left=(15+Math.random()*60)+'%';x.style.top=(15+Math.random()*65)+'%';
+  x.addEventListener('click',function(){this.remove();PET.cl=lim(PET.cl+25);if(!b.children.length){PET.cl=100;say('bb','Kinclong! Terima kasih, Kapten!')}save();refresh()});b.appendChild(x)}
+}
+// Kamar tidur: matikan lampu
+function lamp(on){
+ clearInterval(slp);
+ $('s-bed').classList.toggle('dark',!on);$('lampb').textContent=on?'💡 Matikan lampu':'💡 Nyalakan lampu';$('zz').hidden=on;
+ if(window.ST)ST.mood=on?'happy':'sleep';
+ say('bdb',on?(PET.sl<100?'Aku ngantuk. Matikan lampunya, ya.':'Aku sudah segar!'):'Zzz... sedang tidur');
+ if(!on)slp=setInterval(function(){PET.sl=lim(PET.sl+5);PET.en=lim(PET.en+1);if(PET.sl>=100){lamp(true);say('bdb','Segar! Selamat pagi, Kapten!')}save();refresh()},500);
+}
+$('lampb').addEventListener('click',function(){lamp($('s-bed').classList.contains('dark'))});
+// Kebutuhan turun pelan-pelan
+setInterval(function(){if($('s-bed').classList.contains('dark'))return;PET.en=lim(PET.en-2);PET.cl=lim(PET.cl-2);PET.sl=lim(PET.sl-2);save();refresh()},8000);
+navUp('s-home');
 </script>
 </body>
 </html>
