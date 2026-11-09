@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kapten Bug dan Mesin Waktu Rusak</title>
+<style>
+:root{color-scheme:dark;--bg:#161616;--card:#232323;--line:#3a3a3a;--tx:#f2efe8;--mute:#a8a49a;--ok:#0f5a46;--okt:#7be0b8;--no:#722a14;--not:#ffb08f;--gold:#f2b51d;--blue:#1c4f8f;--navy:#1b2a5c;--or:#f4a259;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);font-size:16px}
+body.big{font-size:1.45em}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:520px;padding:14px}
+body.big #app{max-width:900px}
+.scr{display:none;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.scr.on{display:flex}
+h1{font-size:1.5rem;margin:0;line-height:1.2}
+h2{font-size:1.25rem;margin:0}
+p{margin:0;line-height:1.45}
+.mute{color:var(--mute);font-size:.9rem}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:12px;padding:12px 18px;min-height:44px}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+button:disabled{opacity:.6;cursor:default}
+.go{background:#5a3a08;border-color:var(--gold);color:#ffd98a;font-weight:700}
+.nx{background:var(--ok);border-color:#1b8a6a;color:var(--okt);font-weight:700}
+.rt{background:var(--no);border-color:#b24a26;color:var(--not);font-weight:700}
+.lv{display:flex;gap:8px}
+.lv button{padding:10px 14px}
+.lv button.sel{background:var(--ok);border-color:#1b8a6a;color:var(--okt);font-weight:700}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;width:100%}
+.bar{display:flex;justify-content:space-between;align-items:center;width:100%;gap:10px}
+.bat{display:flex;gap:4px;align-items:center}
+.bat i{width:20px;height:22px;border-radius:4px;border:2px solid #555;background:transparent;display:block}
+.bat i.f{background:var(--gold);border-color:var(--gold)}
+.bat b{width:5px;height:10px;background:#555;border-radius:0 2px 2px 0;margin-left:1px}
+.time{font-weight:700;font-variant-numeric:tabular-nums;min-width:56px;text-align:right}
+.time.low{color:#ff8a6a}
+.dest{border-radius:14px;padding:10px 14px;width:100%;display:flex;align-items:center;gap:12px;text-align:left}
+.dest .em{font-size:2.2rem}
+.bits{display:flex;gap:10px;justify-content:center;background:#5a3a24;border-radius:12px;padding:12px;width:100%}
+.bits span{width:46px;height:46px;border-radius:50%;background:#f2e6cf;color:#3a2410;font-weight:800;font-size:1.4rem;display:flex;align-items:center;justify-content:center}
+.qtxt{font-size:1.05rem;line-height:1.5}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.opts button{background:var(--blue);border-color:#2f6fc0;font-weight:700;padding:14px 8px}
+.wheel{width:190px;height:190px;border-radius:50%;border:4px solid #2b5da8;background:conic-gradient(#2b5da8 0 60deg,#e8f0fb 0 120deg,#2b5da8 0 180deg,#e8f0fb 0 240deg,#2b5da8 0 300deg,#e8f0fb 0 360deg);position:relative;transition:transform 1.8s cubic-bezier(.15,.7,.2,1)}
+.wheel::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px;border-radius:50%;background:#2b5da8;border:3px solid #fff}
+.ptr{width:0;height:0;border:12px solid transparent;border-top:20px solid #e5552b;border-bottom:0;margin-bottom:-26px;z-index:2}
+.fb{width:100%;border-radius:16px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.fb.ok{background:#12372d;border:1px solid #1b8a6a}
+.fb.no{background:#3d1d12;border:1px solid #b24a26}
+.big-em{font-size:4rem;line-height:1}
+.pt{font-size:1.6rem;font-weight:800;color:#ffd98a;letter-spacing:.02em}
+.stars{font-size:2.4rem;color:var(--gold);letter-spacing:6px}
+.stars .off{color:#444}
+.pop{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.8)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+.shake{animation:sh .4s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(prefers-reduced-motion:reduce){.pop,.shake{animation:none}.wheel{transition:none}}
+.top{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);right:8px}
+.top button{padding:6px 10px;min-height:34px;font-size:.8rem;color:var(--mute)}
+.st3d{width:190px;height:200px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+#qbug .st3d{width:140px;height:140px}
+.st3d canvas{display:block;width:100%!important;height:100%!important}
+</style>
+</head>
+<body>
+<div class="top"><button id="pj" aria-pressed="false">Mode proyektor</button></div>
+<main id="app">
+
+<!-- 1. Beranda -->
+<section class="scr on" id="s-home">
+  <div style="height:22px"></div>
+  <h1>Kapten Bug dan<br>Mesin Waktu Rusak</h1>
+  <div id="homeBug"></div>
+  <p class="mute">Bantu Kapten Bug memperbaiki mesin waktunya! Kumpulkan baterai lewat 3 destinasi.</p>
+  <div class="lv" id="lv" role="group" aria-label="Pilih tingkat">
+    <button data-l="0" class="sel">Kadet</button><button data-l="1">Letnan</button><button data-l="2">Kapten</button>
+  </div>
+  <p class="mute" id="lvdesc"></p>
+  <button class="go" id="start">Mulai</button>
+</section>
+
+<!-- 2. Tuas acak -->
+<section class="scr" id="s-lever">
+  <div class="bar"><span class="mute">Baterai</span><div class="bat" id="bat1"></div><span class="mute" id="prog1"></span></div>
+  <h2>Tarik tuas, tentukan tujuan!</h2>
+  <div class="ptr"></div>
+  <div class="wheel" id="wheel"></div>
+  <p id="wres" class="mute">Roda tujuan acak</p>
+  <button class="go" id="pull">Tarik tuas</button>
+</section>
+
+<!-- 3. Destinasi dan soal -->
+<section class="scr" id="s-q">
+  <div class="bar"><div class="bat" id="bat2"></div><span class="mute" id="qcode"></span><span class="time" id="tm">15 dtk</span></div>
+  <div class="dest" id="qdest"></div>
+  <div id="qbug"></div>
+  <div class="bits" id="qbits" hidden></div>
+  <p class="qtxt" id="qtxt"></p>
+  <div class="opts" id="opts"></div>
+  <p class="mute">Pilih satu jawaban</p>
+</section>
+
+<!-- 4 & 5. Umpan balik -->
+<section class="scr" id="s-fb">
+  <div class="bar"><div class="bat" id="bat3"></div><span></span></div>
+  <div class="fb" id="fb"></div>
+</section>
+
+<!-- Gerbang pulang -->
+<section class="scr" id="s-gate">
+  <div style="height:22px"></div>
+  <div class="big-em">🚪✨</div>
+  <h2>Gerbang Pulang terbuka!</h2>
+  <p class="mute">Ketiga destinasi selesai. Mesin waktu siap membawamu pulang.</p>
+  <button class="go" id="seeRes">Lihat hasil</button>
+</section>
+
+<!-- 6. Hasil akhir -->
+<section class="scr" id="s-res">
+  <div style="height:22px"></div>
+  <h2 id="rtitle"></h2>
+  <div class="bat" id="bat4" style="transform:scale(1.5);margin:6px 0"></div>
+  <div class="stars" id="stars"></div>
+  <p><b>Kamu resmi Teknisi Waktu</b></p>
+  <p class="mute" id="badge"></p>
+  <div class="pt" id="score"></div>
+  <div class="lv"><button class="go" id="again">Main lagi</button><button id="done">Selesai</button></div>
+</section>
+
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ===== Data: tokoh =====
+function bug(m){
+  var eyes = m==='panic'
+    ? '<circle cx="39" cy="46" r="8" fill="#fff"/><circle cx="61" cy="46" r="8" fill="#fff"/><circle cx="40" cy="48" r="3" fill="#222"/><circle cx="60" cy="48" r="3" fill="#222"/><ellipse cx="50" cy="62" rx="3.5" ry="4.5" fill="#8a3b12"/><path d="M71 36q4 6 0 9q-4-3 0-9z" fill="#5ec2ff"/>'
+    : '<text x="39" y="52" font-size="15" text-anchor="middle" fill="#fff6c2">★</text><text x="61" y="52" font-size="15" text-anchor="middle" fill="#fff6c2">★</text><path d="M41 60q9 8 18 0" stroke="#8a3b12" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="31" cy="58" r="4" fill="#f08a8a" opacity=".7"/><circle cx="69" cy="58" r="4" fill="#f08a8a" opacity=".7"/>';
+  var arms = m==='panic'
+    ? '<path d="M28 82l-14 12M72 82l14 12" stroke="#a85a1c" stroke-width="5" stroke-linecap="round"/>'
+    : '<path d="M28 80l-14-14M72 80l14-14" stroke="#a85a1c" stroke-width="5" stroke-linecap="round"/>';
+  var lvl = m==='panic' ? '<rect x="42" y="84" width="16" height="12" rx="2" fill="#222"/><rect x="44" y="92" width="12" height="3" fill="#e5552b"/>' : '<rect x="42" y="84" width="16" height="12" rx="2" fill="#222"/><rect x="44" y="86" width="12" height="8" fill="#f2b51d"/>';
+  return '<svg viewBox="0 0 100 120" width="96" height="115" role="img" aria-label="Kapten Bug"><path d="M50 22q-2-10 8-12" stroke="#777" stroke-width="3" fill="none"/><circle cx="59" cy="9" r="4" fill="#e5552b"/><rect x="26" y="20" width="48" height="10" rx="3" fill="#1b2a5c"/><circle cx="50" cy="25" r="2.5" fill="#f2b51d"/><rect x="22" y="30" width="56" height="44" rx="22" fill="#f4a259"/>'+eyes+arms+'<rect x="30" y="74" width="40" height="30" rx="12" fill="#f4a259"/>'+lvl+'<rect x="34" y="104" width="10" height="8" rx="2" fill="#7a3f0e"/><rect x="56" y="104" width="10" height="8" rx="2" fill="#7a3f0e"/></svg>';
+}
+function chick(){
+  return '<svg viewBox="0 0 100 120" width="96" height="115" role="img" aria-label="Kapten Bug jadi ayam"><rect x="36" y="14" width="28" height="7" rx="2" fill="#1b2a5c"/><circle cx="50" cy="25" r="2" fill="#f2b51d"/><circle cx="50" cy="40" r="20" fill="#ffe08a"/><circle cx="43" cy="38" r="2.6" fill="#222"/><circle cx="57" cy="38" r="2.6" fill="#222"/><path d="M45 46h10l-5 8z" fill="#f08a3a"/><ellipse cx="50" cy="80" rx="24" ry="26" fill="#ffe08a"/><ellipse cx="27" cy="80" rx="7" ry="14" fill="#f5cf5e"/><ellipse cx="73" cy="80" rx="7" ry="14" fill="#f5cf5e"/><path d="M42 106v8M58 106v8" stroke="#f08a3a" stroke-width="4"/></svg>';
+}
+
+// ===== Tokoh 3D (three.js): menggantikan versi 2D di atas =====
+function bug(m){return '<div class="st3d" data-c="bug" data-m="'+m+'"></div>'}
+function chick(){return '<div class="st3d" data-c="chick" data-m="x"></div>'}
+function dino(){return '<div class="st3d" data-c="dino" data-m="x"></div>'}
+var ST=null,RM=matchMedia('(prefers-reduced-motion:reduce)').matches?0:1;
+function M(c,r,e){return new THREE.MeshStandardMaterial({color:c,roughness:r==null?.35:r,emissive:e||0,emissiveIntensity:e?.6:0})}
+function SP(r,m,x,y,z,a,b,c){var o=new THREE.Mesh(new THREE.SphereGeometry(r,28,20),m);o.position.set(x,y,z);o.scale.set(a||1,b||1,c||1);return o}
+function CY(a,b,h,m,x,y,z){var o=new THREE.Mesh(new THREE.CylinderGeometry(a,b,h,24),m);o.position.set(x,y,z);return o}
+function CN(r,h,m,x,y,z,rx,rz){var o=new THREE.Mesh(new THREE.ConeGeometry(r,h,16),m);o.position.set(x,y,z);o.rotation.set(rx||0,0,rz||0);return o}
+function starM(x){var s=new THREE.Shape();for(var i=0;i<10;i++){var r=i%2?.07:.18,a=i*Math.PI/5+Math.PI/2,px=Math.cos(a)*r,py=Math.sin(a)*r;i?s.lineTo(px,py):s.moveTo(px,py)}var o=new THREE.Mesh(new THREE.ExtrudeGeometry(s,{depth:.06,bevelEnabled:false}),M(0xfff2a8,.3,0xffc400));o.position.set(x,.15,.86);return o}
+function arm(side,m){var g=new THREE.Group();g.position.set(side*.62,-.35,0);g.add(CY(.1,.1,.55,m,0,-.28,0),SP(.16,m,0,-.58,0));return g}
+function initST(){
+ try{
+  var r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  var sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(35,1,.1,50);cam.position.set(0,.1,8.4);cam.lookAt(0,0,0);
+  sc.add(new THREE.HemisphereLight(0xffffff,0x7a6aa8,.95));
+  var dl=new THREE.DirectionalLight(0xffffff,.9);dl.position.set(3,5,6);sc.add(dl);
+  var og=M(0xf4a259),nv=M(0x1b2a5c),pk=M(0xf08a8a),dk=M(0x222222,.5),wh=M(0xffffff,.2),yl=M(0xf2b51d,.3),rd=M(0xe5552b);
+  // Kapten Bug: robot bulat, topi kapten, antena bengkok
+  var B=new THREE.Group(),hd=new THREE.Group(),bh=new THREE.Group(),bp=new THREE.Group();hd.position.y=.45;
+  hd.add(SP(.95,og,0,0,0,1,.92,1),CY(.6,.66,.34,nv,0,.95,0),CY(.9,.9,.07,nv,0,.8,.06),SP(.1,yl,0,.96,.64,1,1,.5),SP(.15,pk,-.64,-.2,.7,1,.7,.4),SP(.15,pk,.64,-.2,.7,1,.7,.4));
+  var a1=CY(.045,.045,.5,dk,.12,1.4,0);a1.rotation.z=-.4;var a2=CY(.045,.045,.36,dk,.38,1.72,0);a2.rotation.z=-1.2;hd.add(a1,a2,SP(.12,rd,.58,1.82,0));
+  bh.add(starM(-.34),starM(.34));var sm=new THREE.Mesh(new THREE.TorusGeometry(.22,.045,10,20,Math.PI),M(0x8a3b12));sm.rotation.z=Math.PI;sm.position.set(0,-.12,.92);bh.add(sm);
+  bp.add(SP(.22,wh,-.33,.15,.82),SP(.22,wh,.33,.15,.82),SP(.09,dk,-.33,.12,1.02),SP(.09,dk,.33,.12,1.02),SP(.1,M(0x8a3b12),0,-.3,.92,1,1.3,.5),SP(.1,M(0x5ec2ff,.1),.72,.4,.68,.8,1.3,.8));
+  hd.add(bh,bp);B.add(hd,SP(.62,og,0,-.55,0,1,1.05,.9),new THREE.Mesh(new THREE.BoxGeometry(.36,.32,.06),dk),SP(.2,M(0x7a3f0e),-.28,-1.2,.15,1,.6,1.3),SP(.2,M(0x7a3f0e),.28,-1.2,.15,1,.6,1.3));
+  B.children[2].position.set(0,-.6,.57);var fill=new THREE.Mesh(new THREE.BoxGeometry(.26,.22,.07),yl);fill.position.set(0,-.6,.59);B.add(fill);
+  var AL=arm(-1,og),AR=arm(1,og);B.add(AL,AR);B.position.y=-.55;
+  // Ayam (Kapten Bug jadi ayam)
+  var ye=M(0xffe08a,.5),ye2=M(0xf5cf5e,.5),or2=M(0xf08a3a),C=new THREE.Group();
+  C.add(SP(.85,ye,0,-.25,0,1,1,.95),SP(.58,ye,0,.8,.1),CN(.14,.32,or2,0,.72,.72,Math.PI/2),SP(.07,dk,-.22,.92,.58),SP(.07,dk,.22,.92,.58),CY(.3,.34,.2,nv,0,1.42,.05),CY(.4,.4,.05,nv,0,1.31,.1),SP(.09,yl,0,1.42,.36,1,1,.5),CY(.04,.04,.3,or2,-.3,-1.2,.3),CY(.04,.04,.3,or2,.3,-1.2,.3));
+  var WL=new THREE.Group(),WR=new THREE.Group();WL.position.set(-.85,-.1,0);WR.position.set(.85,-.1,0);WL.add(SP(.28,ye2,0,-.15,0,.5,1,1));WR.add(SP(.28,ye2,0,-.15,0,.5,1,1));C.add(WL,WR);C.position.y=-.3;
+  // Dinosaurus pengunyah kabel
+  var gr=M(0x78b84a,.5),D2=new THREE.Group(),dh=new THREE.Group();dh.position.set(.9,.5,0);
+  dh.add(SP(.5,gr,0,0,0,1.2,.9,1),SP(.1,wh,.2,.22,.4),SP(.1,wh,.2,.22,-.4),SP(.05,dk,.26,.22,.47),SP(.05,dk,.26,.22,-.47),CY(.05,.05,.8,M(0x777777),.75,-.12,0));dh.children[5].rotation.z=Math.PI/2;
+  var spk=SP(.12,M(0xffd23a,.3,0xffb300),1.15,-.12,0);dh.add(spk);
+  D2.add(SP(.85,gr,0,-.1,0,1.15,.85,.9),dh,CN(.15,.34,gr,-.45,.7,0),CN(.15,.34,gr,0,.78,0),CN(.15,.34,gr,.4,.72,0),CN(.28,.9,gr,-1.35,-.3,0,0,Math.PI/2+.3),SP(.22,gr,.4,-.85,.35),SP(.22,gr,.4,-.85,-.35),SP(.22,gr,-.4,-.85,.35),SP(.22,gr,-.4,-.85,-.35));
+  D2.rotation.y=-.5;D2.scale.set(.95,.95,.95);D2.position.y=-.1;
+  sc.add(B,C,D2);
+  ST={r:r,sc:sc,cam:cam,B:B,C:C,D:D2,bh:bh,bp:bp,AL:AL,AR:AR,hd:hd,WL:WL,WR:WR,dh:dh,spk:spk,who:'bug',mood:'happy',t0:performance.now(),by:B.position.y,cy:C.position.y};
+  requestAnimationFrame(loop);return true;
+ }catch(e){return false}
+}
+function loop(now){
+ requestAnimationFrame(loop);
+ var s=ST;if(!s||!s.r.domElement.offsetParent)return;
+ var t=(now-s.t0)/1000,p=s.mood==='panic',w=s.who;
+ s.B.visible=w==='bug';s.C.visible=w==='chick';s.D.visible=w==='dino';
+ if(w==='bug'){
+  s.B.position.y=s.by+(p?0:Math.abs(Math.sin(t*4))*.28*RM);
+  s.B.position.x=p?Math.sin(t*45)*.06*RM:0;
+  s.B.rotation.y=p?0:Math.sin(t*1.4)*.4*RM;
+  s.hd.rotation.z=Math.sin(t*3)*.07*RM;
+  s.bh.visible=!p;s.bp.visible=p;
+  var sw=p?.45+Math.sin(t*28)*.25*RM:2.2+Math.sin(t*7)*.35*RM;
+  s.AR.rotation.z=sw;s.AL.rotation.z=-sw;
+ }else if(w==='chick'){
+  s.C.position.y=s.cy+Math.abs(Math.sin(t*5))*.3*RM;
+  s.C.rotation.y=Math.sin(t*2)*.35*RM;
+  var f=.3+Math.sin(t*16)*.45*RM;s.WL.rotation.z=f;s.WR.rotation.z=-f;
+ }else{
+  s.D.position.y=-.1+Math.abs(Math.sin(t*4))*.12*RM;
+  s.dh.rotation.z=Math.sin(t*11)*.16*RM;
+  s.spk.scale.setScalar(.8+Math.abs(Math.sin(t*20))*.6*RM);
+ }
+ s.r.render(s.sc,s.cam);
+}
+function mountStage(){
+ var scr=document.querySelector('.scr.on'),h=scr&&scr.querySelector('.st3d');
+ if(!h)return;
+ if(!window.THREE||(!ST&&!initST())){h.textContent={bug:'🤖',chick:'🐥',dino:'🦖'}[h.dataset.c];h.style.fontSize='4.5rem';return}
+ ST.who=h.dataset.c;ST.mood=h.dataset.m;ST.t0=performance.now();
+ var w=h.clientWidth||190,hh=h.clientHeight||200;
+ ST.r.setSize(w,hh,false);ST.cam.aspect=w/hh;ST.cam.updateProjectionMatrix();
+ h.appendChild(ST.r.domElement);
+}
+
+// ===== Data: destinasi (dari daftar 12 destinasi; yang dipakai versi awal = bab biner) =====
+var D={
+ zb:{n:'Zaman Batu',e:'🔥',bg:'#5a3a24',ok:'Grok bahagia, api menyala!',no:'Grok bingung, apinya padam!',em:'🔥'},
+ kk:{n:'Kerajaan Kuno',e:'🏰',bg:'#43307f',ok:'Obor Raja menyala terang!',no:'Obor padam, Raja mengerutkan dahi.',em:'🏰'},
+ pk:{n:'Planet Kucing',e:'🐱',bg:'#141f45',ok:'Miu-01 mengeong senang!',no:'Meong?! Salah, kucingnya ngambek.',em:'😾'},
+ kt:{n:'Kantin 2099',e:'🤖',bg:'#1f6f6f',ok:'Kasir berbunyi ting! Pembayaran sukses.',no:'Mesin kasir berbunyi error!',em:'🧾'}
+};
+var LV=['Kadet','Letnan','Kapten'];
+var LVD=['Soal dasar: arti 0 dan 1, nilai tempat 8-4-2-1','Soal menengah: biner 4 bit ke desimal','Soal tantangan: desimal ke biner, soal cerita, cari bug'];
+
+// ===== Bank soal modul 1 (Biner): [kode, tingkat, destinasi, soal, pilihan, indeks kunci, penjelasan, bit] =====
+var Q=[
+ ['B-01',0,'zb','Mesin ajaib milik Grok hanya mengenal dua angka. Angka apa saja?',['0 dan 1','1 dan 2','0 sampai 9','A dan B'],0,'Komputer hanya mengenal 0 dan 1, seperti saklar yang mati atau menyala.'],
+ ['B-02',0,'zb','Dalam biner, api yang menyala dilambangkan dengan angka…',['0','1','2','10'],1,'Angka 1 berarti nyala, angka 0 berarti mati.'],
+ ['B-03',0,'zb','Bilangan yang hanya memakai angka 0 dan 1 disebut bilangan…',['Romawi','Pecahan','Biner','Desimal'],2,'Biner adalah bilangan yang hanya memakai 0 dan 1.'],
+ ['B-04',0,'zb','Nilai tempat biner 4 bit dari kiri ke kanan adalah…',['1-2-3-4','8-4-2-1','1-2-4-8','10-5-2-1'],1,'Nilai tempat 4 bit: 8, 4, 2, 1, nilainya turun separuh tiap geser ke kanan.'],
+ ['B-05',0,'zb','Pada biner 1000, angka 1 berada di nilai tempat…',['1','2','4','8'],3,'Posisi paling kiri bernilai 8, jadi 1000 = 8.'],
+ ['B-06',1,'kk','Obor Raja menunjukkan kode di bawah. Berapa nilai desimalnya?',['3','5','6','10'],1,'0101 = 4 + 1 = 5.','0101'],
+ ['B-07',1,'kk','Gerbang kerajaan terbuka dengan kode berikut. Berapa nilainya?',['8','12','10','5'],2,'1010 = 8 + 2 = 10.','1010'],
+ ['B-08',1,'kk','Grok membaca angka biner di dinding istana. Berapa nilainya?',['9','11','13','15'],1,'1011 = 8 + 2 + 1 = 11.','1011'],
+ ['B-09',1,'kk','Prasasti Raja bertuliskan kode di bawah. Berapa nilainya?',['6','7','8','14'],1,'0111 = 4 + 2 + 1 = 7.','0111'],
+ ['B-10',1,'kk','Obor terakhir menyala dengan pola berikut. Berapa nilainya?',['10','11','12','14'],2,'1100 = 8 + 4 = 12.','1100'],
+ ['B-11',2,'pk','Miu-01 ingin mengeong sebanyak 6 kali. Bentuk biner 4 bit dari 6 adalah…',['0011','0101','0110','1001'],2,'6 = 4 + 2, jadi nilai tempat 4 dan 2 menyala: 0110.'],
+ ['B-12',2,'pk','Miu-01 mengeong: meong-meong-diam-meong (meong = 1, diam = 0). Tulis angka binernya dan nilai desimalnya.',['1101 = 13','1011 = 11','1101 = 11','0111 = 7'],0,'Meong-meong-diam-meong = 1101 = 8 + 4 + 1 = 13.'],
+ ['B-13',2,'pk','Cari Bug! Teknisi menulis: 6 dalam biner adalah 0101. Di mana kesalahannya?',['Tidak ada bug, sudah benar','Seharusnya 0110 (4 + 2)','Seharusnya 1001','Seharusnya 0011'],1,'0101 bernilai 5. Untuk 6 seharusnya 0110 karena 6 = 4 + 2.'],
+ ['B-14',2,'kt','Harga bakwan di Kantin 2099 tertulis 0101 (ribu rupiah). Berapa harganya?',['Rp3.000','Rp5.000','Rp6.000','Rp10.000'],1,'0101 = 4 + 1 = 5, jadi harganya Rp5.000.'],
+ ['B-15',2,'kt','Kamu membawa uang Rp12.000. Mesin kasir menampilkannya dalam biner 4 bit. Mana yang benar?',['1010','1001','1100','0110'],2,'12 = 8 + 4, jadi nilai tempat 8 dan 4 menyala: 1100.']
+];
+
+// ===== State =====
+var S={l:0,qs:[],i:0,bat:1,streak:0,score:0,t:15,tid:null,tries:0,q:null};
+var $=function(i){return document.getElementById(i)};
+function show(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.toggle('on',s.id===id)});window.scrollTo(0,0);mountStage()}
+function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function batHTML(n){var h='';for(var i=0;i<5;i++)h+='<i class="'+(i<n?'f':'')+'"></i>';return h+'<b></b>'}
+function setBat(){['bat1','bat2','bat3'].forEach(function(id){$(id).innerHTML=batHTML(S.bat)})}
+
+// ===== Beranda =====
+$('homeBug').innerHTML=bug('happy');mountStage();
+function lvdesc(){$('lvdesc').textContent=LVD[S.l]}
+lvdesc();
+$('lv').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;S.l=+b.dataset.l;[].forEach.call($('lv').children,function(x){x.classList.toggle('sel',x===b)});lvdesc()});
+$('pj').addEventListener('click',function(){var on=document.body.classList.toggle('big');this.setAttribute('aria-pressed',on)});
+$('start').addEventListener('click',newSession);
+
+function newSession(){
+  S.qs=shuf(Q.filter(function(q){return q[1]===S.l})).slice(0,3); // 3 soal sesuai tingkat dari bank soal bab aktif
+  S.i=0;S.bat=1;S.streak=0;S.score=0;
+  toLever();
+}
+
+// ===== Tuas acak =====
+var rot=0;
+function toLever(){
+  setBat();
+  $('prog1').textContent='Destinasi '+(S.i+1)+' dari 3';
+  $('wres').textContent='Roda tujuan acak';
+  $('pull').disabled=false;
+  show('s-lever');
+}
+$('pull').addEventListener('click',function(){
+  var btn=this;btn.disabled=true;
+  var w=$('wheel');rot+=1440+Math.floor(Math.random()*360);w.style.transform='rotate('+rot+'deg)';
+  $('wres').textContent='Mesin waktu berputar…';
+  S.q=S.qs[S.i];S.tries=0;
+  setTimeout(function(){
+    var d=D[S.q[2]];
+    $('wres').innerHTML='Tujuan: <b>'+d.e+' '+d.n+'</b>';
+    setTimeout(toQuestion,1100);
+  },matchMedia('(prefers-reduced-motion:reduce)').matches?200:1900);
+});
+
+// ===== Destinasi dan soal =====
+function toQuestion(){
+  var q=S.q,d=D[q[2]];
+  setBat();
+  $('qcode').textContent=q[0]+' · '+LV[q[1]];
+  var de=$('qdest');de.style.background=d.bg;de.innerHTML='<span class="em">'+d.e+'</span><div><b>'+d.n+'</b><div class="mute" style="color:#ddd">Tingkat '+LV[q[1]]+'</div></div>';
+  $('qtxt').textContent=q[3];
+  var bits=$('qbits');
+  if(q[7]){bits.hidden=false;bits.innerHTML=q[7].split('').map(function(c){return '<span>'+c+'</span>'}).join('')}else bits.hidden=true;
+  var idx=shuf([0,1,2,3]);var o=$('opts');o.innerHTML='';
+  idx.forEach(function(k,p){
+    var b=document.createElement('button');b.textContent='ABCD'[p]+'. '+q[4][k];b.dataset.k=k;
+    b.addEventListener('click',function(){answer(+b.dataset.k===q[5])});
+    o.appendChild(b);
+  });
+  $('qbug').innerHTML=bug('happy');
+  S.t=15;tick();
+  clearInterval(S.tid);
+  S.tid=setInterval(function(){S.t--;tick();if(S.t<=0){clearInterval(S.tid);timeout()}},1000);
+  show('s-q');
+}
+function tick(){
+  var t=$('tm');t.textContent=S.t+' dtk';t.classList.toggle('low',S.t<=5);
+  if(S.t<=5&&S.t>0&&$('qbug').firstChild&&$('qbug').firstChild.dataset.m!=='panic'){$('qbug').innerHTML=bug('panic');mountStage()} // Panik saat waktu hampir habis
+}
+function lock(){clearInterval(S.tid);[].forEach.call($('opts').children,function(b){b.disabled=true})}
+
+function answer(ok){
+  lock();var q=S.q,d=D[q[2]];
+  if(ok){
+    var first=S.tries===0;
+    S.streak=first?S.streak+1:0;
+    var combo=S.streak===3;
+    S.bat=Math.min(5,S.bat+(combo?2:1));
+    S.score+=20+Math.max(0,S.t);
+    setBat();
+    var kal=combo?'Kombo! Baterai x2!':'Mantap! Baterai +1';
+    $('fb').className='fb ok pop';
+    $('fb').innerHTML=bug('happy')+'<h2>'+kal+'</h2><p>'+d.em+' '+d.ok+'</p><p class="mute" style="color:#cfe">'+q[6]+'</p><button class="nx" id="nxt">Lanjut</button>';
+    $('nxt').addEventListener('click',next);
+    show('s-fb');
+  }else{
+    S.tries++;S.streak=0;
+    wrong('PETOK!',chick(),'Kapten Bug jadi ayam. '+d.no,'Ingat nilai tempat 8-4-2-1');
+  }
+}
+function timeout(){
+  S.tries++;S.streak=0;
+  wrong('Waktu habis!',dino(),'Dinosaurus mengunyah kabelnya!','Tenang, coba lagi soal yang sama. Ingat nilai tempat 8-4-2-1');
+}
+function wrong(title,art,msg,hint){
+  setBat();
+  $('fb').className='fb no shake';
+  $('fb').innerHTML=art+'<div class="pt">'+title+'</div><p>'+msg+'</p><p class="mute" style="color:#ffd3c0">'+hint+'</p><button class="rt" id="retry">Coba lagi</button>';
+  $('retry').addEventListener('click',toQuestion); // soal yang sama, tidak langsung gagal
+  show('s-fb');
+}
+function next(){
+  if(S.i<2){S.i++;toLever()}else show('s-gate'); // 3 destinasi selesai → gerbang pulang
+}
+
+// ===== Gerbang pulang dan hasil akhir =====
+$('seeRes').addEventListener('click',function(){
+  var sc=Math.min(100,S.score);
+  $('rtitle').textContent=S.bat>=5?'Baterai penuh!':'Baterai terisi '+S.bat+' dari 5';
+  $('bat4').innerHTML=batHTML(S.bat);
+  var st=sc>=80?3:sc>=50?2:1;
+  $('stars').innerHTML='★'.repeat(st)+'<span class="off">'+'★'.repeat(3-st)+'</span>';
+  $('badge').textContent='Lencana '+LV[S.l]+' · Modul 1: Biner';
+  $('score').textContent='Skor '+sc;
+  show('s-res');
+});
+$('again').addEventListener('click',newSession);
+$('done').addEventListener('click',function(){show('s-home')});
+</script>
+</body>
+</html>
